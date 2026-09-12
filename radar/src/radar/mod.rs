@@ -108,7 +108,7 @@ impl Screensaver for Radar {
     }
 
     fn update(&mut self, dt: Duration, cols: usize, rows: usize) {
-        let dt_secs = dt.as_secs_f32();
+        let dt_secs = dt.as_secs_f32().min(0.1);
         let speed_mult = if self.on_battery { 0.65 } else { 1.0 };
         let delta = dt_secs * speed_mult;
         self.time_elapsed += delta;

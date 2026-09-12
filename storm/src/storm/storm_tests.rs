@@ -67,3 +67,17 @@ fn storm_draw_grid_length_matches_dims() {
     storm.draw(&mut grid, 50, 18);
     assert_eq!(grid.len(), 50 * 18);
 }
+
+#[test]
+fn update_clamps_huge_dt_after_resume() {
+    // A suspend/resume (or long hitch) can deliver a multi-minute dt.
+    // update() must clamp the simulation step (<=0.1s + first-frame init)
+    // rather than teleporting particles or exhausting rockets/timers.
+    let mut saver = Storm::new();
+    saver.update(std::time::Duration::from_secs(300), 80, 24);
+    assert!(
+        saver.time_elapsed < 1.0,
+        "time_elapsed advanced by {} on a 300s dt — clamp missing",
+        saver.time_elapsed
+    );
+}

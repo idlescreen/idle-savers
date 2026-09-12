@@ -21,6 +21,7 @@ pub fn draw_background(
 ) -> Option<usize> {
     let secondary = crate::runner::is_secondary_monitor();
     let (ar, ag, ab) = accent;
+    let inv_glow_radius = 1.0 / (fire_w * 2.6).max(1e-6);
 
     for y in 0..rows {
         for x in 0..cols {
@@ -35,7 +36,9 @@ pub fn draw_background(
             let dx = x as f32 - fire_cx;
             let dy = y as f32 - fire_y;
             let dist = (dx * dx + dy * dy * 1.4).sqrt();
-            let glow = (1.0 - (dist / (fire_w * 2.6)).clamp(0.0, 1.0)).powf(1.5);
+            // g^1.5 == g * sqrt(g); avoids powf in this per-cell hot loop.
+            let g = (1.0 - dist * inv_glow_radius).clamp(0.0, 1.0);
+            let glow = g * g.sqrt();
             let floor = if y as f32 > fire_y { 0.08 } else { 0.0 };
             let base_r = 6.0 + glow * 55.0 * fire_pulse + floor * 20.0;
             let base_g = 4.0 + glow * 22.0 * fire_pulse + floor * 8.0;

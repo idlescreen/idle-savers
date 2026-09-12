@@ -80,17 +80,14 @@ pub fn handle_nebular_stellar_ignition(eff: &mut Cosmos, dir: f32) {
         birth_timer: 0.0,
     });
 
-    let mut to_remove = vec![false; eff.particles.len()];
-    for &idx in &neighbors {
-        to_remove[idx] = true;
+    // Remove neighbor particles via descending swap_remove: processing
+    // indices largest-first keeps every pending removal index valid, and
+    // particle order is not load-bearing (drawn unordered). Avoids a
+    // per-event O(n) retain + bool-vec allocation.
+    neighbors.sort_unstable_by(|a, b| b.cmp(a));
+    for idx in neighbors {
+        eff.particles.swap_remove(idx);
     }
-
-    let mut i = 0;
-    eff.particles.retain(|_| {
-        let keep = !to_remove[i];
-        i += 1;
-        keep
-    });
 
     let spark_color = (
         avg_color.0.saturating_add(80),

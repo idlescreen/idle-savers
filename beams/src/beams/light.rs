@@ -68,6 +68,7 @@ fn angular_weight(abs_da: f32, spread: f32) -> f32 {
     (soft * 0.72 + core * 0.55).min(1.2)
 }
 
+#[allow(clippy::too_many_arguments)]
 pub fn get_light_at(
     cx: f32,
     cy: f32,
@@ -75,9 +76,12 @@ pub fn get_light_at(
     spotlights: &[Spotlight],
     current_angles: &[f32],
     spot_cots: &[(f32, f32, f32, f32, f32)],
-    _time_elapsed: f32,
+    accent: (u8, u8, u8),
+    is_secondary: bool,
 ) -> (f32, f32, f32, f32) {
-    if crate::runner::is_secondary_monitor() {
+    // `is_secondary` is hoisted by callers: this runs per cell × beam —
+    // querying the env/callback here was ~40k env scans per frame.
+    if is_secondary {
         return (0.0, 0.0, 0.0, 0.0);
     }
     let mut r = 0.0f32;
@@ -129,9 +133,15 @@ pub fn get_light_at(
                     let dist_intensity = (1.0 - dist_t) * (1.0 - dist_t * 0.35);
                     let intensity = ang * dist_intensity * 0.92;
 
-                    r += intensity * spot.color_r;
-                    g += intensity * spot.color_g;
-                    b += intensity * spot.color_b;
+                    // Beam 1 tracks the live theme accent.
+                    let (cr, cg, cb) = if i == 1 {
+                        (accent.0 as f32, accent.1 as f32, accent.2 as f32)
+                    } else {
+                        (spot.color_r, spot.color_g, spot.color_b)
+                    };
+                    r += intensity * cr;
+                    g += intensity * cg;
+                    b += intensity * cb;
                     total_intensity += intensity;
                 }
             }
@@ -155,10 +165,10 @@ pub fn draw_spotlight(
     spotlights: &[Spotlight],
     current_angles: &[f32],
     spot_cots: &[(f32, f32, f32, f32, f32)],
-    time_elapsed: f32,
+    accent: (u8, u8, u8),
+    is_secondary: bool,
     intro_fade: f32,
 ) {
-    let is_secondary = crate::runner::is_secondary_monitor();
     let fade = intro_fade.clamp(0.0, 1.0);
     for y in 0..rows {
         let y_f = y as f32;
@@ -174,7 +184,8 @@ pub fn draw_spotlight(
                     spotlights,
                     current_angles,
                     spot_cots,
-                    time_elapsed,
+                    accent,
+                    is_secondary,
                 );
                 let on_primary = ctx.primary.contains(x, y);
                 // Soft outer glow even at low intensity

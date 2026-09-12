@@ -107,3 +107,64 @@ fn test_hsl_rgb_conversions() {
     assert!((s - 1.0).abs() < 0.01);
     assert!((l - 0.5).abs() < 0.01);
 }
+
+#[test]
+fn trim_particles_keeps_highest_energy() {
+    // Regression: the trim sort was ascending, which culled the hot/fast
+    // particles it was meant to preserve.
+    let mut eff = Cosmos::new();
+    eff.on_battery = true;
+    eff.quality_scale = 0.2; // budget = max(580*0.2*0.55, 120) = 120
+    for i in 0..130usize {
+        let hot = i >= 120;
+        eff.particles.push(Particle {
+            x: 0.0,
+            y: 0.0,
+            vx: if hot { 100.0 } else { 0.01 },
+            vy: 0.0,
+            mass: 1.0,
+            color: (255, 255, 255),
+            ch: '*',
+            history: Vec::new(),
+            logo_letter: None,
+        });
+    }
+    physics::particle_cap::trim_particles(&mut eff);
+    assert_eq!(eff.particles.len(), 120);
+    let hot = eff.particles.iter().filter(|p| p.vx.abs() > 50.0).count();
+    assert_eq!(hot, 10, "highest-energy particles must survive the trim");
+}
+
+#[test]
+fn ignition_consumes_cluster_and_spawns_seed() {
+    // 50 particles stacked at one point: every pick sees the same dense
+    // clump, so a seeded rng will ignite within a bounded number of tries.
+    let mut eff = Cosmos::new();
+    eff.rng = LcgRng::new(42);
+    eff.state_timer = 2.0;
+    eff.universe_cx = 40.0;
+    eff.universe_cy = 12.0;
+    for _ in 0..50 {
+        eff.particles.push(Particle {
+            x: 10.0,
+            y: 10.0,
+            vx: 0.0,
+            vy: 0.0,
+            mass: 1.0,
+            color: (200, 200, 200),
+            ch: '*',
+            history: Vec::new(),
+            logo_letter: None,
+        });
+    }
+    for _ in 0..500 {
+        if !eff.seeds.is_empty() {
+            break;
+        }
+        physics::ignition::handle_nebular_stellar_ignition(&mut eff, 1.0);
+    }
+    assert_eq!(eff.seeds.len(), 1, "seeded ignition never fired");
+    // The 50-particle clump was consumed; 15 spark shards were emitted.
+    assert_eq!(eff.particles.len(), 15);
+    assert_eq!(eff.seeds[0].color, (200, 200, 200));
+}

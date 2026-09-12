@@ -16,7 +16,7 @@ members = [
 exclude = ["idle"]
 
 [workspace.package]
-version = "2.3.0"
+version = "2.3.1"
 edition = "2024"
 authors = ["idlescreen developers"]
 license = "Apache-2.0"

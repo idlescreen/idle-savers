@@ -19,6 +19,8 @@ pub fn draw_impl(
     wind: f32,
     accent: (u8, u8, u8),
     logo_text: &str,
+    accum: &std::cell::RefCell<Vec<f32>>,
+    accent_a: &std::cell::RefCell<Vec<f32>>,
 ) {
     if cols == 0 || rows == 0 || grid.is_empty() {
         return;
@@ -28,8 +30,14 @@ pub fn draw_impl(
     let (ar, ag, ab) = accent;
     let n = cols * rows;
 
-    let mut accum = vec![0.0f32; n];
-    let mut accent_a = vec![0.0f32; n];
+    // Reuse the caller-owned scratch buffers — this ran two full-grid
+    // allocations per frame (~80KB @ 1080p-equivalent, ~5MB/s churn).
+    let mut accum = accum.borrow_mut();
+    let mut accent_a = accent_a.borrow_mut();
+    accum.clear();
+    accum.resize(n, 0.0);
+    accent_a.clear();
+    accent_a.resize(n, 0.0);
 
     let aspect = 0.5f32;
     for ring in rings {

@@ -117,7 +117,7 @@ impl Screensaver for Beams {
     }
 
     fn update(&mut self, dt: Duration, cols: usize, rows: usize) {
-        let dt_secs = dt.as_secs_f32();
+        let dt_secs = dt.as_secs_f32().min(0.1);
         let speed_mult = if self.on_battery { 0.65 } else { 1.0 };
         let delta = dt_secs * speed_mult;
         self.time_elapsed += delta;
@@ -196,8 +196,9 @@ impl Screensaver for Beams {
             &mut self.rng,
             cols,
             rows,
-            self.time_elapsed,
             delta,
+            self.cached_accent,
+            crate::runner::is_secondary_monitor(),
         );
 
         // Beam phase advance with per-beam bias + per-beam calm easing

@@ -16,10 +16,10 @@ pub fn draw_dust(
     spotlights: &[Spotlight],
     current_angles: &[f32],
     spot_cots: &[(f32, f32, f32, f32, f32)],
-    time_elapsed: f32,
+    accent: (u8, u8, u8),
+    is_secondary: bool,
     intro_fade: f32,
 ) {
-    let is_secondary = crate::runner::is_secondary_monitor();
     let fade = intro_fade.clamp(0.0, 1.0);
     for p in particles {
         let px = (p.x * cols as f32) as usize;
@@ -36,7 +36,8 @@ pub fn draw_dust(
                     spotlights,
                     current_angles,
                     spot_cots,
-                    time_elapsed,
+                    accent,
+                    is_secondary,
                 )
             };
 
@@ -113,17 +114,12 @@ pub fn draw_impl(
     accent: (u8, u8, u8),
     intro_fade: f32,
 ) {
-    let mut spotlights = spotlights.to_vec();
-    // Live accent on beam index 1 (theme-aware)
-    if spotlights.len() >= 2 {
-        spotlights[1].color_r = accent.0 as f32;
-        spotlights[1].color_g = accent.1 as f32;
-        spotlights[1].color_b = accent.2 as f32;
-    }
+    // Beam 1's live accent is applied inside get_light_at — no clone needed.
+    let is_secondary = crate::runner::is_secondary_monitor();
 
     let mut current_angles = Vec::new();
     let mut spot_cots = Vec::new();
-    for spot in &spotlights {
+    for spot in spotlights {
         // Per-beam calm: only this cone eases amplitude, others keep sweeping.
         let amp = spot.angle_amplitude * (0.35 + 0.65 * spot.motion_blend);
         let angle = spot.angle_center + amp * (spot.phase + spot.phase_offset).sin();
@@ -152,17 +148,18 @@ pub fn draw_impl(
         spot_cots.push((a_min, a_max, cot_min, cot_max, inv_spread));
     }
 
-    let light_ctx = LightContext::new(cols, rows, &spotlights);
+    let light_ctx = LightContext::new(cols, rows, spotlights);
 
     draw_spotlight(
         grid,
         cols,
         rows,
         &light_ctx,
-        &spotlights,
+        spotlights,
         &current_angles,
         &spot_cots,
-        time_elapsed,
+        accent,
+        is_secondary,
         intro_fade,
     );
 
@@ -174,9 +171,11 @@ pub fn draw_impl(
         stars,
         twinkle_stars_opt,
         time_elapsed,
-        &spotlights,
+        spotlights,
         &current_angles,
         &spot_cots,
+        accent,
+        is_secondary,
         intro_fade,
     );
 
@@ -186,14 +185,15 @@ pub fn draw_impl(
         rows,
         &light_ctx,
         particles,
-        &spotlights,
+        spotlights,
         &current_angles,
         &spot_cots,
-        time_elapsed,
+        accent,
+        is_secondary,
         intro_fade,
     );
 
-    if !crate::runner::is_secondary_monitor()
+    if !is_secondary
         && let Some(logo) = crate::runner::place_centered_logo(cols, rows, logo_text, None)
     {
         for (r_offset, line) in logo.lines.iter().enumerate() {
@@ -211,10 +211,11 @@ pub fn draw_impl(
                         gx as f32,
                         gy as f32,
                         &light_ctx,
-                        &spotlights,
+                        spotlights,
                         &current_angles,
                         &spot_cots,
-                        time_elapsed,
+                        accent,
+                        is_secondary,
                     );
                     let (fg_r, fg_g, fg_b) = if intensity > 0.05 {
                         let l_r = (90.0 * (1.0 - intensity) + lr * intensity).min(255.0) as u8;

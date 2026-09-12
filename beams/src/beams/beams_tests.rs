@@ -98,7 +98,8 @@ fn test_math_light_falloff() {
             &spotlights,
             &current_angles,
             &spot_cots,
-            0.0,
+            (255, 200, 120),
+            false,
         );
         let (_, _, _, far) = super::light::get_light_at(
             40.0,
@@ -107,7 +108,8 @@ fn test_math_light_falloff() {
             &spotlights,
             &current_angles,
             &spot_cots,
-            0.0,
+            (255, 200, 120),
+            false,
         );
 
         assert!(
@@ -158,7 +160,8 @@ fn test_math_light_angle_boundary() {
             &spotlights,
             &current_angles,
             &spot_cots,
-            0.0,
+            (255, 200, 120),
+            false,
         );
         let (_, _, _, i_offside) = super::light::get_light_at(
             20.0,
@@ -167,7 +170,8 @@ fn test_math_light_angle_boundary() {
             &spotlights,
             &current_angles,
             &spot_cots,
-            0.0,
+            (255, 200, 120),
+            false,
         );
 
         assert!(i_center > 0.0);
@@ -242,4 +246,18 @@ fn test_calm_never_freezes_all_beams() {
             );
         }
     }
+}
+
+#[test]
+fn update_clamps_huge_dt_after_resume() {
+    // A suspend/resume (or long hitch) can deliver a multi-minute dt.
+    // update() must clamp the simulation step (<=0.1s + first-frame init)
+    // rather than teleporting particles or exhausting rockets/timers.
+    let mut saver = Beams::new();
+    saver.update(std::time::Duration::from_secs(300), 80, 24);
+    assert!(
+        saver.time_elapsed < 1.0,
+        "time_elapsed advanced by {} on a 300s dt — clamp missing",
+        saver.time_elapsed
+    );
 }

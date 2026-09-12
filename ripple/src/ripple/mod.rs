@@ -36,6 +36,10 @@ pub struct Ripple {
     accent: (u8, u8, u8),
     logo_text: String,
     surface_phase: f32,
+    // Ring-energy accumulation scratch — reused across frames (draw is
+    // &self, so interior mutability). Sized cols*rows on demand.
+    accum: std::cell::RefCell<Vec<f32>>,
+    accent_a: std::cell::RefCell<Vec<f32>>,
 }
 
 impl Default for Ripple {
@@ -70,6 +74,8 @@ impl Ripple {
             accent: query_current_palette().accent,
             logo_text: sys.logo_text,
             surface_phase: 0.0,
+            accum: std::cell::RefCell::new(Vec::new()),
+            accent_a: std::cell::RefCell::new(Vec::new()),
         }
     }
 
@@ -229,6 +235,8 @@ impl Screensaver for Ripple {
             self.wind,
             self.accent,
             &self.logo_text,
+            &self.accum,
+            &self.accent_a,
         );
     }
 }

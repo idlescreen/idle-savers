@@ -35,7 +35,7 @@ impl Screensaver for Glyphs {
     }
 
     fn update(&mut self, dt: Duration, cols: usize, rows: usize) {
-        let dt_secs = dt.as_secs_f32();
+        let dt_secs = dt.as_secs_f32().min(0.1);
         let speed_mult = if self.on_battery { 0.65 } else { 1.0 };
         let delta = dt_secs * speed_mult;
         self.time_elapsed += delta;
@@ -83,7 +83,7 @@ impl Screensaver for Glyphs {
             let mut unused: Vec<usize> = (0..cols).filter(|x| !used_cols[*x]).collect();
             while self.drops.len() < target_drops && !unused.is_empty() {
                 let idx = self.rng.next_usize(unused.len());
-                let x = unused.remove(idx);
+                let x = unused.swap_remove(idx);
                 self.drops.push(physics::spawn_drop(
                     x,
                     rows,

@@ -4,7 +4,10 @@
 /// a = G * m / (r² + ε²)^(3/2) * r⃗
 pub fn newtonian_accel(m_source: f32, dx: f32, dy: f32, g: f32, softening: f32) -> (f32, f32) {
     let dist_sq = dx * dx + dy * dy;
-    let denom = (dist_sq + softening * softening).powf(1.5);
+    // x^1.5 == x * sqrt(x); powf(1.5) internally goes through exp2/log2
+    // and costs ~10x a sqrt in this per-particle-per-source hot loop.
+    let softened = dist_sq + softening * softening;
+    let denom = softened * softened.sqrt();
     if denom < 1e-6 {
         return (0.0, 0.0);
     }

@@ -17,27 +17,39 @@ pub fn draw_star(
     spotlights: &[Spotlight],
     current_angles: &[f32],
     spot_cots: &[(f32, f32, f32, f32, f32)],
+    accent: (u8, u8, u8),
+    is_secondary: bool,
     intro_fade: f32,
 ) {
     if twinkle_stars_opt != 1 {
         return;
     }
 
-    // Flares only for highly excited *near* stars
-    let mut flare_candidates: Vec<(usize, f32)> = stars
-        .iter()
-        .enumerate()
-        .filter(|(_, star)| star.excitation > 0.85 && star.layer == 1)
-        .map(|(idx, star)| (idx, star.excitation))
-        .collect();
-    flare_candidates.sort_by(|a, b| b.1.total_cmp(&a.1));
-    let allowed_flares: Vec<usize> = flare_candidates
-        .iter()
-        .take(3)
-        .map(|&(idx, _)| idx)
-        .collect();
+    // Top-3 flare selection by excitation — fixed-size insertion, no
+    // per-frame Vec allocs (was: collect + sort + take + collect).
+    const MAX_FLARES: usize = 3;
+    let mut flare_idx = [0usize; MAX_FLARES];
+    let mut flare_score = [f32::MIN; MAX_FLARES];
+    let mut n_flares = 0usize;
+    for (i, star) in stars.iter().enumerate() {
+        if star.excitation <= 0.85 || star.layer != 1 {
+            continue;
+        }
+        if n_flares == MAX_FLARES && star.excitation <= flare_score[MAX_FLARES - 1] {
+            continue;
+        }
+        let mut pos = n_flares.min(MAX_FLARES - 1);
+        while pos > 0 && star.excitation > flare_score[pos - 1] {
+            flare_score[pos] = flare_score[pos - 1];
+            flare_idx[pos] = flare_idx[pos - 1];
+            pos -= 1;
+        }
+        flare_score[pos] = star.excitation;
+        flare_idx[pos] = i;
+        n_flares = (n_flares + 1).min(MAX_FLARES);
+    }
+    let allowed_flares = &flare_idx[..n_flares];
 
-    let is_secondary = crate::runner::is_secondary_monitor();
     let fade = intro_fade.clamp(0.0, 1.0);
 
     for (i, star) in stars.iter().enumerate() {
@@ -54,7 +66,8 @@ pub fn draw_star(
             spotlights,
             current_angles,
             spot_cots,
-            time_elapsed,
+            accent,
+            is_secondary,
         );
         let on_primary = ctx.primary.contains(sx, sy) && !is_secondary;
 

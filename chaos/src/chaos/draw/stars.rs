@@ -10,19 +10,30 @@ impl Chaos {
         rows: usize,
         accent: (u8, u8, u8),
     ) {
-        let mut flare_candidates: Vec<(usize, f32)> = self
-            .stars
-            .iter()
-            .enumerate()
-            .filter(|(_, star)| star.excitation > 0.8)
-            .map(|(idx, star)| (idx, star.excitation))
-            .collect();
-        flare_candidates.sort_by(|a, b| b.1.total_cmp(&a.1));
-        let allowed_flares: Vec<usize> = flare_candidates
-            .iter()
-            .take(4)
-            .map(|&(idx, _)| idx)
-            .collect();
+        // Top-4 flare selection by excitation — fixed-size insertion, no
+        // per-frame Vec allocs (was: collect + sort + take + collect).
+        const MAX_FLARES: usize = 4;
+        let mut flare_idx = [0usize; MAX_FLARES];
+        let mut flare_score = [f32::MIN; MAX_FLARES];
+        let mut n_flares = 0usize;
+        for (i, star) in self.stars.iter().enumerate() {
+            if star.excitation <= 0.8 {
+                continue;
+            }
+            if n_flares == MAX_FLARES && star.excitation <= flare_score[MAX_FLARES - 1] {
+                continue;
+            }
+            let mut pos = n_flares.min(MAX_FLARES - 1);
+            while pos > 0 && star.excitation > flare_score[pos - 1] {
+                flare_score[pos] = flare_score[pos - 1];
+                flare_idx[pos] = flare_idx[pos - 1];
+                pos -= 1;
+            }
+            flare_score[pos] = star.excitation;
+            flare_idx[pos] = i;
+            n_flares = (n_flares + 1).min(MAX_FLARES);
+        }
+        let allowed_flares = &flare_idx[..n_flares];
 
         for (i, star) in self.stars.iter().enumerate() {
             let sx = (star.x * cols as f32) as usize;

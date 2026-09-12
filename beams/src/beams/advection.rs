@@ -13,8 +13,9 @@ pub fn update_dust_and_stars(
     rng: &mut LcgRng,
     cols: usize,
     rows: usize,
-    time_elapsed: f32,
     delta: f32,
+    accent: (u8, u8, u8),
+    is_secondary: bool,
 ) {
     let mut angles = Vec::with_capacity(spotlights.len());
     let mut cots = Vec::with_capacity(spotlights.len());
@@ -46,8 +47,16 @@ pub fn update_dust_and_stars(
     for p in particles {
         let px = p.x * cols_f;
         let py = p.y * rows_f;
-        let (_, _, _, intensity) =
-            light::get_light_at(px, py, &light_ctx, spotlights, &angles, &cots, time_elapsed);
+        let (_, _, _, intensity) = light::get_light_at(
+            px,
+            py,
+            &light_ctx,
+            spotlights,
+            &angles,
+            &cots,
+            accent,
+            is_secondary,
+        );
 
         let updraft = 1.0 + intensity * 2.2;
         let side = (intensity - 0.35).max(0.0) * rng.next_range(-0.02, 0.02);

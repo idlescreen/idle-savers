@@ -12,17 +12,20 @@ pub fn can_spawn(eff: &Cosmos, count: usize) -> bool {
     eff.particles.len().saturating_add(count) <= particle_budget(eff)
 }
 
-/// Drop oldest, lowest-energy particles when over budget.
+/// Drop lowest-energy particles when over budget.
 pub fn trim_particles(eff: &mut Cosmos) {
     let budget = particle_budget(eff);
     let excess = eff.particles.len().saturating_sub(budget);
     if excess == 0 {
         return;
     }
-    eff.particles.sort_by(|a, b| {
+    // Highest energy to the front — truncate keeps them, drops the rest.
+    // (Previously sorted ascending, which kept the *lowest*-energy
+    // particles and culled the hot/fast ones it meant to preserve.)
+    eff.particles.sort_unstable_by(|a, b| {
         let ea = a.vx * a.vx + a.vy * a.vy;
         let eb = b.vx * b.vx + b.vy * b.vy;
-        ea.partial_cmp(&eb).unwrap_or(std::cmp::Ordering::Equal)
+        eb.partial_cmp(&ea).unwrap_or(std::cmp::Ordering::Equal)
     });
     eff.particles.truncate(budget);
 }

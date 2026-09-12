@@ -98,8 +98,16 @@ pub fn draw_simulation(
             let mut in_jet_range = false;
 
             for jet in jets.iter().filter(|j| j.active) {
+                // Cheap bbox reject before the per-cell sqrt+atan2 —
+                // jdist <= 8.0 requires |jdx| <= 8.0 and |jdy| <= 8.0.
                 let jdx = c as f32 - jet.x;
+                if jdx.abs() > 8.0 {
+                    continue;
+                }
                 let jdy = (r as f32 - jet.y) * 2.0;
+                if jdy.abs() > 8.0 {
+                    continue;
+                }
                 let jdist = (jdx * jdx + jdy * jdy).sqrt();
 
                 if jdist <= 8.0 {
