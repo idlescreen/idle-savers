@@ -1,0 +1,52 @@
+[package]
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+name = "storm"
+version.workspace = true
+edition.workspace = true
+description = "Forest rain, lightning, and wildlife silhouettes"
+publish = false
+autobins = false
+
+[lib]
+name = "screensaver_storm"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+idle-api.workspace = true
+
+[build-dependencies]
+build-support.workspace = true
+
+[package.metadata.deb]
+name = "idle-saver-storm"
+maintainer = "idlescreen <jerydleuck@gmail.com>"
+extended-description = "Forest rain, lightning, and wildlife silhouettes. Official IdleScreen screensaver plugin."
+depends = "libc6"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/libscreensaver_storm.so", "usr/libexec/idle/screensavers/libscreensaver_storm.so", "644"],
+    ["libscreensaver_storm.idleplugin.toml", "usr/libexec/idle/screensavers/libscreensaver_storm.idleplugin.toml", "644"]
+]
+
+[package.metadata.generate-rpm]
+name = "idle-saver-storm"
+release = "1"
+arch = "x86_64"
+summary = "Forest rain, lightning, and wildlife silhouettes"
+description = "Forest rain, lightning, and wildlife silhouettes"
+license = "Apache-2.0"
+assets = [
+    { source = "target/release/libscreensaver_storm.so", dest = "/usr/libexec/idle/screensavers/libscreensaver_storm.so", mode = "644", user = "root", group = "root" },
+    { source = "libscreensaver_storm.idleplugin.toml", dest = "/usr/libexec/idle/screensavers/libscreensaver_storm.idleplugin.toml", mode = "644", user = "root", group = "root" }
+]
+
+[package.metadata.generate-rpm.requires]
+idle-daemon = "*"
+
+[package.metadata.generate-rpm.provides]
+
+[package.metadata.generate-rpm.obsoletes]

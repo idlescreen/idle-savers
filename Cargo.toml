@@ -1,0 +1,34 @@
+[workspace]
+resolver = "3"
+members = [
+    "beams",
+    "build-support",
+    "bursts",
+    "chaos",
+    "cosmos",
+    "glyphs",
+    "gnats",
+    "hearth",
+    "radar",
+    "ripple",
+    "storm",
+]
+exclude = ["idle"]
+
+[workspace.package]
+version = "2.3.0"
+edition = "2024"
+authors = ["idlescreen developers"]
+license = "Apache-2.0"
+repository = "https://github.com/idlescreen/idle-savers"
+
+[workspace.dependencies]
+# `idle/` is a sibling checkout of the engine repo — CI fetches it into
+# the repo root; locally bootstrap.sh symlinks it.
+idle-api = { version = "3.3.0", path = "idle/idle-api" }
+build-support = { path = "build-support" }
+proptest = "1.6"
+
+[profile.release]
+opt-level = "z"
+lto = true

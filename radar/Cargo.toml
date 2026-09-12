@@ -1,0 +1,54 @@
+[package]
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+name = "radar"
+version.workspace = true
+edition.workspace = true
+description = "Retro CRT tactical radar sweep"
+publish = false
+autobins = false
+
+[lib]
+name = "screensaver_radar"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+idle-api.workspace = true
+
+[build-dependencies]
+build-support.workspace = true
+
+[package.metadata.deb]
+name = "idle-saver-radar"
+maintainer = "idlescreen <jerydleuck@gmail.com>"
+extended-description = "Retro CRT tactical radar sweep. Official IdleScreen screensaver plugin."
+depends = "libc6"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/libscreensaver_radar.so", "usr/libexec/idle/screensavers/libscreensaver_radar.so", "644"],
+    ["libscreensaver_radar.idleplugin.toml", "usr/libexec/idle/screensavers/libscreensaver_radar.idleplugin.toml", "644"],
+    ["assets/idlescreen-radar.png", "usr/share/pixmaps/idlescreen-radar.png", "644"]
+]
+
+[package.metadata.generate-rpm]
+name = "idle-saver-radar"
+release = "1"
+arch = "x86_64"
+summary = "Retro CRT tactical radar sweep"
+description = "Retro CRT tactical radar sweep"
+license = "Apache-2.0"
+assets = [
+    { source = "target/release/libscreensaver_radar.so", dest = "/usr/libexec/idle/screensavers/libscreensaver_radar.so", mode = "644", user = "root", group = "root" },
+    { source = "libscreensaver_radar.idleplugin.toml", dest = "/usr/libexec/idle/screensavers/libscreensaver_radar.idleplugin.toml", mode = "644", user = "root", group = "root" },
+    { source = "assets/idlescreen-radar.png", dest = "/usr/share/pixmaps/idlescreen-radar.png", mode = "644", user = "root", group = "root" }
+]
+
+[package.metadata.generate-rpm.requires]
+idle-daemon = "*"
+
+[package.metadata.generate-rpm.provides]
+
+[package.metadata.generate-rpm.obsoletes]

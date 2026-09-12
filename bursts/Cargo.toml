@@ -1,0 +1,54 @@
+[package]
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+name = "bursts"
+version.workspace = true
+edition.workspace = true
+description = "City skyline fireworks particle show"
+publish = false
+autobins = false
+
+[lib]
+name = "screensaver_bursts"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+idle-api.workspace = true
+
+[build-dependencies]
+build-support.workspace = true
+
+[package.metadata.deb]
+name = "idle-saver-bursts"
+maintainer = "idlescreen <jerydleuck@gmail.com>"
+extended-description = "City skyline fireworks particle show. Official IdleScreen screensaver plugin."
+depends = "libc6"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/libscreensaver_bursts.so", "usr/libexec/idle/screensavers/libscreensaver_bursts.so", "644"],
+    ["libscreensaver_bursts.idleplugin.toml", "usr/libexec/idle/screensavers/libscreensaver_bursts.idleplugin.toml", "644"],
+    ["assets/idlescreen-bursts.png", "usr/share/pixmaps/idlescreen-bursts.png", "644"]
+]
+
+[package.metadata.generate-rpm]
+name = "idle-saver-bursts"
+release = "1"
+arch = "x86_64"
+summary = "City skyline fireworks particle show"
+description = "City skyline fireworks particle show"
+license = "Apache-2.0"
+assets = [
+    { source = "target/release/libscreensaver_bursts.so", dest = "/usr/libexec/idle/screensavers/libscreensaver_bursts.so", mode = "644", user = "root", group = "root" },
+    { source = "libscreensaver_bursts.idleplugin.toml", dest = "/usr/libexec/idle/screensavers/libscreensaver_bursts.idleplugin.toml", mode = "644", user = "root", group = "root" },
+    { source = "assets/idlescreen-bursts.png", dest = "/usr/share/pixmaps/idlescreen-bursts.png", mode = "644", user = "root", group = "root" }
+]
+
+[package.metadata.generate-rpm.requires]
+idle-daemon = "*"
+
+[package.metadata.generate-rpm.provides]
+
+[package.metadata.generate-rpm.obsoletes]

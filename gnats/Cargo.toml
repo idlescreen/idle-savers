@@ -1,0 +1,54 @@
+[package]
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+name = "gnats"
+version.workspace = true
+edition.workspace = true
+description = "Predator-prey firefly swarm"
+publish = false
+autobins = false
+
+[lib]
+name = "screensaver_gnats"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+idle-api.workspace = true
+
+[build-dependencies]
+build-support.workspace = true
+
+[package.metadata.deb]
+name = "idle-saver-gnats"
+maintainer = "idlescreen <jerydleuck@gmail.com>"
+extended-description = "Predator-prey firefly swarm. Official IdleScreen screensaver plugin."
+depends = "libc6"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/libscreensaver_gnats.so", "usr/libexec/idle/screensavers/libscreensaver_gnats.so", "644"],
+    ["libscreensaver_gnats.idleplugin.toml", "usr/libexec/idle/screensavers/libscreensaver_gnats.idleplugin.toml", "644"],
+    ["assets/idlescreen-gnats.png", "usr/share/pixmaps/idlescreen-gnats.png", "644"]
+]
+
+[package.metadata.generate-rpm]
+name = "idle-saver-gnats"
+release = "1"
+arch = "x86_64"
+summary = "Predator-prey firefly swarm"
+description = "Predator-prey firefly swarm"
+license = "Apache-2.0"
+assets = [
+    { source = "target/release/libscreensaver_gnats.so", dest = "/usr/libexec/idle/screensavers/libscreensaver_gnats.so", mode = "644", user = "root", group = "root" },
+    { source = "libscreensaver_gnats.idleplugin.toml", dest = "/usr/libexec/idle/screensavers/libscreensaver_gnats.idleplugin.toml", mode = "644", user = "root", group = "root" },
+    { source = "assets/idlescreen-gnats.png", dest = "/usr/share/pixmaps/idlescreen-gnats.png", mode = "644", user = "root", group = "root" }
+]
+
+[package.metadata.generate-rpm.requires]
+idle-daemon = "*"
+
+[package.metadata.generate-rpm.provides]
+
+[package.metadata.generate-rpm.obsoletes]

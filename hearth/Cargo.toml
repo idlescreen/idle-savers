@@ -1,0 +1,54 @@
+[package]
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+name = "hearth"
+version.workspace = true
+edition.workspace = true
+description = "Cozy fireplace: rising embers, log glow, heat shimmer"
+publish = false
+autobins = false
+
+[lib]
+name = "screensaver_hearth"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+idle-api.workspace = true
+
+[build-dependencies]
+build-support.workspace = true
+
+[package.metadata.deb]
+name = "idle-saver-hearth"
+maintainer = "idlescreen <jerydleuck@gmail.com>"
+extended-description = "Cozy fireplace with rising embers and heat shimmer. Official IdleScreen screensaver plugin."
+depends = "libc6"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/libscreensaver_hearth.so", "usr/libexec/idle/screensavers/libscreensaver_hearth.so", "644"],
+    ["libscreensaver_hearth.idleplugin.toml", "usr/libexec/idle/screensavers/libscreensaver_hearth.idleplugin.toml", "644"],
+    ["assets/idlescreen-hearth.png", "usr/share/pixmaps/idlescreen-hearth.png", "644"]
+]
+
+[package.metadata.generate-rpm]
+name = "idle-saver-hearth"
+release = "1"
+arch = "x86_64"
+summary = "Cozy fireplace: rising embers and heat shimmer"
+description = "Cozy fireplace with rising embers, log glow, and heat shimmer"
+license = "Apache-2.0"
+assets = [
+    { source = "target/release/libscreensaver_hearth.so", dest = "/usr/libexec/idle/screensavers/libscreensaver_hearth.so", mode = "644", user = "root", group = "root" },
+    { source = "libscreensaver_hearth.idleplugin.toml", dest = "/usr/libexec/idle/screensavers/libscreensaver_hearth.idleplugin.toml", mode = "644", user = "root", group = "root" },
+    { source = "assets/idlescreen-hearth.png", dest = "/usr/share/pixmaps/idlescreen-hearth.png", mode = "644", user = "root", group = "root" }
+]
+
+[package.metadata.generate-rpm.requires]
+idle-daemon = "*"
+
+[package.metadata.generate-rpm.provides]
+
+[package.metadata.generate-rpm.obsoletes]

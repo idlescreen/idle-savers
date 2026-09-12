@@ -1,0 +1,54 @@
+[package]
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+name = "cosmos"
+version.workspace = true
+edition.workspace = true
+description = "Accretion disk to collapsed singularity lifecycle"
+publish = false
+autobins = false
+
+[lib]
+name = "screensaver_cosmos"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+idle-api.workspace = true
+
+[build-dependencies]
+build-support.workspace = true
+
+[package.metadata.deb]
+name = "idle-saver-cosmos"
+maintainer = "idlescreen <jerydleuck@gmail.com>"
+extended-description = "Accretion disk to collapsed singularity lifecycle. Official IdleScreen screensaver plugin."
+depends = "libc6"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/libscreensaver_cosmos.so", "usr/libexec/idle/screensavers/libscreensaver_cosmos.so", "644"],
+    ["libscreensaver_cosmos.idleplugin.toml", "usr/libexec/idle/screensavers/libscreensaver_cosmos.idleplugin.toml", "644"],
+    ["assets/idlescreen-cosmos.png", "usr/share/pixmaps/idlescreen-cosmos.png", "644"]
+]
+
+[package.metadata.generate-rpm]
+name = "idle-saver-cosmos"
+release = "1"
+arch = "x86_64"
+summary = "Accretion disk to collapsed singularity lifecycle"
+description = "Accretion disk to collapsed singularity lifecycle"
+license = "Apache-2.0"
+assets = [
+    { source = "target/release/libscreensaver_cosmos.so", dest = "/usr/libexec/idle/screensavers/libscreensaver_cosmos.so", mode = "644", user = "root", group = "root" },
+    { source = "libscreensaver_cosmos.idleplugin.toml", dest = "/usr/libexec/idle/screensavers/libscreensaver_cosmos.idleplugin.toml", mode = "644", user = "root", group = "root" },
+    { source = "assets/idlescreen-cosmos.png", dest = "/usr/share/pixmaps/idlescreen-cosmos.png", mode = "644", user = "root", group = "root" }
+]
+
+[package.metadata.generate-rpm.requires]
+idle-daemon = "*"
+
+[package.metadata.generate-rpm.provides]
+
+[package.metadata.generate-rpm.obsoletes]

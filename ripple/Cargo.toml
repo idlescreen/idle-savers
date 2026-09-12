@@ -1,0 +1,54 @@
+[package]
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+name = "ripple"
+version.workspace = true
+edition.workspace = true
+description = "Rain on a still pond: expanding rings and soft drizzle"
+publish = false
+autobins = false
+
+[lib]
+name = "screensaver_ripple"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+idle-api.workspace = true
+
+[build-dependencies]
+build-support.workspace = true
+
+[package.metadata.deb]
+name = "idle-saver-ripple"
+maintainer = "idlescreen <jerydleuck@gmail.com>"
+extended-description = "Rain on a still pond with expanding rings. Official IdleScreen screensaver plugin."
+depends = "libc6"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/libscreensaver_ripple.so", "usr/libexec/idle/screensavers/libscreensaver_ripple.so", "644"],
+    ["libscreensaver_ripple.idleplugin.toml", "usr/libexec/idle/screensavers/libscreensaver_ripple.idleplugin.toml", "644"],
+    ["assets/idlescreen-ripple.png", "usr/share/pixmaps/idlescreen-ripple.png", "644"]
+]
+
+[package.metadata.generate-rpm]
+name = "idle-saver-ripple"
+release = "1"
+arch = "x86_64"
+summary = "Rain on a still pond: expanding rings"
+description = "Rain on a still pond with expanding concentric rings and soft drizzle"
+license = "Apache-2.0"
+assets = [
+    { source = "target/release/libscreensaver_ripple.so", dest = "/usr/libexec/idle/screensavers/libscreensaver_ripple.so", mode = "644", user = "root", group = "root" },
+    { source = "libscreensaver_ripple.idleplugin.toml", dest = "/usr/libexec/idle/screensavers/libscreensaver_ripple.idleplugin.toml", mode = "644", user = "root", group = "root" },
+    { source = "assets/idlescreen-ripple.png", dest = "/usr/share/pixmaps/idlescreen-ripple.png", mode = "644", user = "root", group = "root" }
+]
+
+[package.metadata.generate-rpm.requires]
+idle-daemon = "*"
+
+[package.metadata.generate-rpm.provides]
+
+[package.metadata.generate-rpm.obsoletes]

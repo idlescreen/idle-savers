@@ -1,0 +1,54 @@
+[package]
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+name = "glyphs"
+version.workspace = true
+edition.workspace = true
+description = "Matrix-style rain with live system information"
+publish = false
+autobins = false
+
+[lib]
+name = "screensaver_glyphs"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+idle-api.workspace = true
+
+[build-dependencies]
+build-support.workspace = true
+
+[package.metadata.deb]
+name = "idle-saver-glyphs"
+maintainer = "idlescreen <jerydleuck@gmail.com>"
+extended-description = "Matrix-style rain with live system information. Official IdleScreen screensaver plugin."
+depends = "libc6"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/libscreensaver_glyphs.so", "usr/libexec/idle/screensavers/libscreensaver_glyphs.so", "644"],
+    ["libscreensaver_glyphs.idleplugin.toml", "usr/libexec/idle/screensavers/libscreensaver_glyphs.idleplugin.toml", "644"],
+    ["assets/idlescreen-glyphs.png", "usr/share/pixmaps/idlescreen-glyphs.png", "644"]
+]
+
+[package.metadata.generate-rpm]
+name = "idle-saver-glyphs"
+release = "1"
+arch = "x86_64"
+summary = "Matrix-style rain with live system information"
+description = "Matrix-style rain with live system information"
+license = "Apache-2.0"
+assets = [
+    { source = "target/release/libscreensaver_glyphs.so", dest = "/usr/libexec/idle/screensavers/libscreensaver_glyphs.so", mode = "644", user = "root", group = "root" },
+    { source = "libscreensaver_glyphs.idleplugin.toml", dest = "/usr/libexec/idle/screensavers/libscreensaver_glyphs.idleplugin.toml", mode = "644", user = "root", group = "root" },
+    { source = "assets/idlescreen-glyphs.png", dest = "/usr/share/pixmaps/idlescreen-glyphs.png", mode = "644", user = "root", group = "root" }
+]
+
+[package.metadata.generate-rpm.requires]
+idle-daemon = "*"
+
+[package.metadata.generate-rpm.provides]
+
+[package.metadata.generate-rpm.obsoletes]

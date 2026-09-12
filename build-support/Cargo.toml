@@ -1,0 +1,15 @@
+[package]
+name = "build-support"
+description = "Shared build-script helpers for the saver workspace (Windows resource embedding)"
+publish = false
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+path = "src/lib.rs"
+
+[dependencies]
+embed-resource = "2"

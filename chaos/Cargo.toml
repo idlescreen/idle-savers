@@ -1,0 +1,54 @@
+[package]
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+name = "chaos"
+version.workspace = true
+edition.workspace = true
+description = "Chromatic-aberration system logo glitch"
+publish = false
+autobins = false
+
+[lib]
+name = "screensaver_chaos"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+idle-api.workspace = true
+
+[build-dependencies]
+build-support.workspace = true
+
+[package.metadata.deb]
+name = "idle-saver-chaos"
+maintainer = "idlescreen <jerydleuck@gmail.com>"
+extended-description = "Chromatic-aberration system logo glitch. Official IdleScreen screensaver plugin."
+depends = "libc6"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/libscreensaver_chaos.so", "usr/libexec/idle/screensavers/libscreensaver_chaos.so", "644"],
+    ["libscreensaver_chaos.idleplugin.toml", "usr/libexec/idle/screensavers/libscreensaver_chaos.idleplugin.toml", "644"],
+    ["assets/idlescreen-chaos.png", "usr/share/pixmaps/idlescreen-chaos.png", "644"]
+]
+
+[package.metadata.generate-rpm]
+name = "idle-saver-chaos"
+release = "1"
+arch = "x86_64"
+summary = "Chromatic-aberration system logo glitch"
+description = "Chromatic-aberration system logo glitch"
+license = "Apache-2.0"
+assets = [
+    { source = "target/release/libscreensaver_chaos.so", dest = "/usr/libexec/idle/screensavers/libscreensaver_chaos.so", mode = "644", user = "root", group = "root" },
+    { source = "libscreensaver_chaos.idleplugin.toml", dest = "/usr/libexec/idle/screensavers/libscreensaver_chaos.idleplugin.toml", mode = "644", user = "root", group = "root" },
+    { source = "assets/idlescreen-chaos.png", dest = "/usr/share/pixmaps/idlescreen-chaos.png", mode = "644", user = "root", group = "root" }
+]
+
+[package.metadata.generate-rpm.requires]
+idle-daemon = "*"
+
+[package.metadata.generate-rpm.provides]
+
+[package.metadata.generate-rpm.obsoletes]

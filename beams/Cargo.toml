@@ -1,0 +1,56 @@
+[package]
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+name = "beams"
+version.workspace = true
+edition.workspace = true
+description = "Spotlight cones sweeping a rising dust starfield"
+publish = false
+autobins = false
+
+[lib]
+name = "screensaver_beams"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+idle-api.workspace = true
+
+[build-dependencies]
+build-support.workspace = true
+[package.metadata.deb]
+name = "idle-saver-beams"
+maintainer = "idlescreen <jerydleuck@gmail.com>"
+extended-description = "Spotlight cones sweeping a rising dust starfield. Official IdleScreen screensaver plugin."
+depends = "libc6"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/libscreensaver_beams.so", "usr/libexec/idle/screensavers/libscreensaver_beams.so", "644"],
+    ["libscreensaver_beams.idleplugin.toml", "usr/libexec/idle/screensavers/libscreensaver_beams.idleplugin.toml", "644"],
+    ["assets/idlescreen-beams.png", "usr/share/pixmaps/idlescreen-beams.png", "644"]
+]
+
+[package.metadata.generate-rpm]
+name = "idle-saver-beams"
+release = "1"
+arch = "x86_64"
+summary = "Spotlight cones sweeping a rising dust starfield"
+description = "Spotlight cones sweeping a rising dust starfield"
+license = "Apache-2.0"
+assets = [
+    { source = "target/release/libscreensaver_beams.so", dest = "/usr/libexec/idle/screensavers/libscreensaver_beams.so", mode = "644", user = "root", group = "root" },
+    { source = "libscreensaver_beams.idleplugin.toml", dest = "/usr/libexec/idle/screensavers/libscreensaver_beams.idleplugin.toml", mode = "644", user = "root", group = "root" },
+    { source = "assets/idlescreen-beams.png", dest = "/usr/share/pixmaps/idlescreen-beams.png", mode = "644", user = "root", group = "root" }
+]
+
+[package.metadata.generate-rpm.requires]
+idle-daemon = "*"
+
+[dev-dependencies]
+proptest.workspace = true
+
+[package.metadata.generate-rpm.provides]
+
+[package.metadata.generate-rpm.obsoletes]
