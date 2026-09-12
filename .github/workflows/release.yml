@@ -62,7 +62,12 @@ jobs:
       - name: Package all savers
         run: |
           set -euo pipefail
-          for member in beams bursts chaos cosmos glyphs gnats hearth radar ripple storm; do
+          shopt -s nullglob
+          # Saver members are identified by their plugin manifest — adding a
+          # crate to the workspace with a libscreensaver_*.idleplugin.toml
+          # automatically packages it; no list to keep in sync.
+          for manifest in */libscreensaver_*.idleplugin.toml; do
+            member="${manifest%%/*}"
             cargo deb --no-build -p "$member"
             cargo generate-rpm -p "$member"
           done

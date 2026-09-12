@@ -1,9 +1,10 @@
 # idle-savers
 
-All ten official IdleScreen screensaver plugins, in one workspace.
+All eleven official IdleScreen screensaver plugins, in one workspace.
 
 | Saver | Package | Description |
 |---|---|---|
+| `aurora/` | `idle-saver-aurora` | Aurora borealis curtains over a starfield (`[saver] aurora.*` params) |
 | `beams/` | `idle-saver-beams` | Spotlight cones sweeping a rising dust starfield |
 | `bursts/` | `idle-saver-bursts` | Firework rockets and particle bursts |
 | `chaos/` | `idle-saver-chaos` | Strange-attractor particle chaos |
@@ -18,7 +19,7 @@ All ten official IdleScreen screensaver plugins, in one workspace.
 Each crate builds a `libscreensaver_<name>.so` cdylib plus a sibling
 `.idleplugin.toml` manifest, installed to
 `/usr/libexec/idle/screensavers/` by the signed deb/rpm packages. The
-`idle-savers` meta-package (in `idlescreen/idle`) depends on all ten.
+`idle-savers` meta-package (in `idlescreen/idle`) depends on all eleven.
 
 ## Development
 

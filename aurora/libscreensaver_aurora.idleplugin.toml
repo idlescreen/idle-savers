@@ -1,15 +1,15 @@
 # IdleScreen plugin manifest — schema v1
 # https://idlescreen.github.io/schemas/idleplugin-v1.toml
-# Sibling to libscreensaver_ripple.so per DECISION-MANIFEST-01 (Option A).
+# Sibling to libscreensaver_aurora.so per DECISION-MANIFEST-01 (Option A).
 
 schema_version = 1
-plugin_id      = "io.idlescreen.saver.Ripple"
+plugin_id      = "io.idlescreen.saver.Aurora"
 plugin_version = "2.4.0"
 api_version    = 1
 
 [entry]
 runtime = "native"
-library = "libscreensaver_ripple.so"
+library = "libscreensaver_aurora.so"
 
 [capabilities]
 network          = false

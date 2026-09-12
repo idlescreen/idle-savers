@@ -1,0 +1,54 @@
+[package]
+authors.workspace = true
+repository.workspace = true
+license.workspace = true
+name = "aurora"
+version.workspace = true
+edition.workspace = true
+description = "Aurora borealis: slow curtains of light over a starfield"
+publish = false
+autobins = false
+
+[lib]
+name = "screensaver_aurora"
+path = "src/lib.rs"
+crate-type = ["cdylib"]
+
+[dependencies]
+idle-api.workspace = true
+
+[build-dependencies]
+build-support.workspace = true
+
+[package.metadata.deb]
+name = "idle-saver-aurora"
+maintainer = "idlescreen <jerydleuck@gmail.com>"
+extended-description = "Aurora borealis with slow drifting light curtains over a starfield. Official IdleScreen screensaver plugin."
+depends = "libc6"
+section = "utils"
+priority = "optional"
+assets = [
+    ["target/release/libscreensaver_aurora.so", "usr/libexec/idle/screensavers/libscreensaver_aurora.so", "644"],
+    ["libscreensaver_aurora.idleplugin.toml", "usr/libexec/idle/screensavers/libscreensaver_aurora.idleplugin.toml", "644"],
+    ["assets/idlescreen-aurora.png", "usr/share/pixmaps/idlescreen-aurora.png", "644"]
+]
+
+[package.metadata.generate-rpm]
+name = "idle-saver-aurora"
+release = "1"
+arch = "x86_64"
+summary = "Aurora borealis: slow curtains of light over a starfield"
+description = "Aurora borealis with slow drifting light curtains over a starfield"
+license = "Apache-2.0"
+assets = [
+    { source = "target/release/libscreensaver_aurora.so", dest = "/usr/libexec/idle/screensavers/libscreensaver_aurora.so", mode = "644", user = "root", group = "root" },
+    { source = "libscreensaver_aurora.idleplugin.toml", dest = "/usr/libexec/idle/screensavers/libscreensaver_aurora.idleplugin.toml", mode = "644", user = "root", group = "root" },
+    { source = "assets/idlescreen-aurora.png", dest = "/usr/share/pixmaps/idlescreen-aurora.png", mode = "644", user = "root", group = "root" }
+]
+
+[package.metadata.generate-rpm.requires]
+idle-daemon = "*"
+
+[package.metadata.generate-rpm.provides]
+
+[package.metadata.generate-rpm.obsoletes]

@@ -4,7 +4,7 @@
 
 schema_version = 1
 plugin_id      = "io.idlescreen.saver.Bursts"
-plugin_version = "2.3.0"
+plugin_version = "2.4.0"
 api_version    = 1
 
 [entry]
