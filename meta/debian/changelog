@@ -1,3 +1,10 @@
+idle-savers (3.3.1-1) unstable; urgency=medium
+
+  * Moved into the savers workspace as meta/ — the bundle now versions
+    with the savers it pulls in (was idle-plugins-all in runtime).
+
+ -- IdleScreen <jerydleuck@gmail.com>  Sat, 13 Sep 2026 12:00:00 +0000
+
 idle-savers (3.3.0-1) unstable; urgency=medium
 
   * Add idle-saver-aurora (aurora borealis curtains over starfield).
