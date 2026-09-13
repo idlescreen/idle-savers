@@ -30,9 +30,9 @@ idlescreen install savers
 ## Commands
 
 ```sh
-idlescreen savers              # list installed plugins
-idlescreen saver set aurora    # pick one
-idlescreen preview storm       # fullscreen preview
+idlescreen preview storm   # try one fullscreen
+idlescreen tui             # pick the active saver
+idlescreen update          # get new saver builds
 ```
 
 ## License
