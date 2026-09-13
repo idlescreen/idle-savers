@@ -5,11 +5,11 @@ if command -v apt-get >/dev/null 2>&1; then
     sudo apt-get update && sudo apt-get install -y libdbus-1-dev libwayland-dev libxkbcommon-dev libssl-dev pkg-config libudev-dev
 fi
 
-if [ ! -d "../idle" ] && [ "$(basename "$PWD")" != "idle" ]; then git clone https://github.com/idlescreen/idle ../idle; fi
+if [ ! -d "../runtime" ] && [ "$(basename "$PWD")" != "idle" ]; then git clone https://github.com/idlescreen/runtime ../runtime; fi
 
 # Path deps resolve via repo-local `idle/` — CI checks out the engine
 # there; locally it is a gitignored symlink to the sibling clone.
-if [ ! -e idle ] && [ -d ../idle ]; then ln -s ../idle idle; fi
+if [ ! -e idle ] && [ -d ../runtime ]; then ln -s ../runtime idle; fi
 
 if ! command -v rustup >/dev/null 2>&1; then
     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y

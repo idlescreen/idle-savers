@@ -25,4 +25,4 @@ build/
 **/assets/*_split
 *.scr
 *.exe
-idle
+runtime
