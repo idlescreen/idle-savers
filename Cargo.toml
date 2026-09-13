@@ -21,7 +21,7 @@ version = "2.4.0"
 edition = "2024"
 authors = ["idlescreen developers"]
 license = "Apache-2.0"
-repository = "https://github.com/idlescreen/idle-savers"
+repository = "https://github.com/idlescreen/savers"
 
 [workspace.dependencies]
 # `idle/` is a sibling checkout of the engine repo — CI fetches it into

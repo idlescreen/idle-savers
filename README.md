@@ -1,4 +1,4 @@
-# idle-savers
+# savers
 
 All eleven official IdleScreen screensaver plugins, in one workspace.
 
