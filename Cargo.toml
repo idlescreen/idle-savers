@@ -2,6 +2,7 @@
 resolver = "3"
 members = [
     "aurora",
+    "meta",
     "beams",
     "build-support",
     "bursts",

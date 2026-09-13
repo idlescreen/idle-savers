@@ -19,7 +19,7 @@ All eleven official IdleScreen screensaver plugins, in one workspace.
 Each crate builds a `libscreensaver_<name>.so` cdylib plus a sibling
 `.idleplugin.toml` manifest, installed to
 `/usr/libexec/idle/screensavers/` by the signed deb/rpm packages. The
-`idle-savers` meta-package (in `idlescreen/runtime`) depends on all eleven.
+`idle-savers` meta-package (`meta/` member here) depends on all eleven.
 
 ## Development
 

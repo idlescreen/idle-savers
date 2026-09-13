@@ -72,6 +72,12 @@ jobs:
             cargo generate-rpm -p "$member"
           done
 
+      - name: Package meta-package
+        run: |
+          # `idle-savers` metapackage (meta/ member) hard-depends on every
+          # saver — generated here so the bundle versions with its contents.
+          (cd meta && cargo deb --no-build && cargo generate-rpm)
+
       - name: Install Cosign
         run: |
           curl -Lo cosign https://github.com/sigstore/cosign/releases/download/v2.2.4/cosign-linux-amd64
