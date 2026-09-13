@@ -59,24 +59,55 @@ jobs:
       - name: Build release libraries
         run: cargo build --release --workspace
 
-      - name: Package all savers
+      - name: Determine which packages to publish
+        id: plan
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
           shopt -s nullglob
-          # Saver members are identified by their plugin manifest — adding a
-          # crate to the workspace with a libscreensaver_*.idleplugin.toml
-          # automatically packages it; no list to keep in sync.
+          # The packages pool is the source of truth for "already
+          # distributed" — rebuilding an unchanged version produces
+          # byte-different files that trip the importer's no-clobber guard.
+          in_pool() {
+            gh api "repos/idlescreen/packages/contents/rpm/pool/$1" \
+              --jq .name >/dev/null 2>&1 || \
+            gh api "repos/idlescreen/packages/contents/apt/pool/main/$2" \
+              --jq .name >/dev/null 2>&1
+          }
+          ver() { grep -m1 '^version' "$1/Cargo.toml" | cut -d'"' -f2; }
+          members=""
           for manifest in */libscreensaver_*.idleplugin.toml; do
             member="${manifest%%/*}"
-            cargo deb --no-build -p "$member"
-            cargo generate-rpm -p "$member"
+            v=$(ver "$member")
+            if ! in_pool "idle-saver-${member}-${v}-1.x86_64.rpm" "idle-saver-${member}_${v}-1_amd64.deb"; then
+              members="$members $member"
+            fi
           done
+          v=$(ver meta)
+          if ! in_pool "idle-savers-${v}-1.x86_64.rpm" "idle-savers_${v}-1_amd64.deb"; then
+            members="$members meta"
+          fi
+          members="${members# }"
+          echo "members=$members" >> "$GITHUB_OUTPUT"
+          echo "to build: ${members:-<none>}"
 
-      - name: Package meta-package
+      - name: Package changed members
+        if: steps.plan.outputs.members != ''
         run: |
-          # `idle-savers` metapackage (meta/ member) hard-depends on every
-          # saver — generated here so the bundle versions with its contents.
-          (cd meta && cargo deb --no-build && cargo generate-rpm)
+          set -euo pipefail
+          # Saver members are identified by their plugin manifest — adding a
+          # crate to the workspace with a libscreensaver_*.idleplugin.toml
+          # automatically packages it; no list to keep in sync. `meta` is the
+          # idle-savers bundle and packages from its own dir.
+          for member in ${{ steps.plan.outputs.members }}; do
+            if [ "$member" = "meta" ]; then
+              (cd meta && cargo deb --no-build && cargo generate-rpm)
+            else
+              cargo deb --no-build -p "$member"
+              cargo generate-rpm -p "$member"
+            fi
+          done
 
       - name: Install Cosign
         run: |
@@ -85,6 +116,7 @@ jobs:
           sudo mv cosign /usr/local/bin/
 
       - name: Sign packages with Cosign
+        if: steps.plan.outputs.members != ''
         run: |
           shopt -s nullglob
           for file in target/debian/*.deb target/generate-rpm/*.rpm */target/generate-rpm/*.rpm; do
@@ -92,6 +124,7 @@ jobs:
           done
 
       - name: Create Release
+        if: steps.plan.outputs.members != ''
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -101,6 +134,10 @@ jobs:
             target/generate-rpm/*.rpm target/generate-rpm/*.sig target/generate-rpm/*.pem
             */target/generate-rpm/*.rpm */target/generate-rpm/*.sig */target/generate-rpm/*.pem
           )
+          if [ ${#files[@]} -eq 0 ]; then
+            echo "::warning::all packages already in the pool — release has no assets"
+            exit 0
+          fi
           if gh release view "${{ github.ref_name }}" >/dev/null 2>&1; then
             gh release upload "${{ github.ref_name }}" "${files[@]}" --clobber
           else
@@ -111,6 +148,7 @@ jobs:
           fi
 
       - name: Trigger Packages Repository Update
+        if: steps.plan.outputs.members != ''
         env:
           DISPATCH_TOKEN: ${{ secrets.IDLESCREEN_PACKAGES_DISPATCH_TOKEN }}
         run: |
