@@ -19,28 +19,20 @@ for Linux.
 | `ripple/` | `idle-saver-ripple` | Rain ripples on dark water |
 | `storm/` | `idle-saver-storm` | Forest rain, lightning, wildlife silhouettes |
 
-Each crate builds a `libscreensaver_<name>.so` cdylib plus an
-`.idleplugin.toml` manifest, installed to
-`/usr/libexec/idle/screensavers/` by the signed deb/rpm packages.
+## Install
 
-## Use
+Ships with the `idlescreen` product package. On its own:
+
+```sh
+idlescreen install savers
+```
+
+## Commands
 
 ```sh
 idlescreen savers              # list installed plugins
 idlescreen saver set aurora    # pick one
 idlescreen preview storm       # fullscreen preview
-```
-
-## Develop
-
-Path dependency: a `runtime/` checkout inside this repo (or a symlink to a
-sibling clone) provides `idle-api`.
-
-```sh
-git clone https://github.com/idlescreen/savers.git && cd savers
-git clone https://github.com/idlescreen/runtime runtime    # path dep
-cargo test --workspace    # all savers
-cargo test -p storm       # one saver
 ```
 
 ## License
