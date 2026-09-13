@@ -1,6 +1,9 @@
 # savers
 
-All eleven official IdleScreen screensaver plugins, in one workspace.
+All eleven official IdleScreen screensaver plugins in one workspace, plus
+the `idle-savers` bundle (`meta/`). Part of
+[IdleScreen](https://idlescreen.github.io) — modular Wayland screensavers
+for Linux.
 
 | Saver | Package | Description |
 |---|---|---|
@@ -16,37 +19,30 @@ All eleven official IdleScreen screensaver plugins, in one workspace.
 | `ripple/` | `idle-saver-ripple` | Rain ripples on dark water |
 | `storm/` | `idle-saver-storm` | Forest rain, lightning, wildlife silhouettes |
 
-Each crate builds a `libscreensaver_<name>.so` cdylib plus a sibling
+Each crate builds a `libscreensaver_<name>.so` cdylib plus an
 `.idleplugin.toml` manifest, installed to
-`/usr/libexec/idle/screensavers/` by the signed deb/rpm packages. The
-`idle-savers` meta-package (`meta/` member here) depends on all eleven.
+`/usr/libexec/idle/screensavers/` by the signed deb/rpm packages.
 
-## Development
+## Use
 
-```bash
-./bootstrap.sh            # installs deps + symlinks the idle engine checkout
+```sh
+idlescreen savers              # list installed plugins
+idlescreen saver set aurora    # pick one
+idlescreen preview storm       # fullscreen preview
+```
+
+## Develop
+
+Path dependency: a `runtime/` checkout inside this repo (or a symlink to a
+sibling clone) provides `idle-api`.
+
+```sh
+git clone https://github.com/idlescreen/savers.git && cd savers
+git clone https://github.com/idlescreen/runtime runtime    # path dep
 cargo test --workspace    # all savers
 cargo test -p storm       # one saver
 ```
 
-The workspace depends on `idle-api` via a path dependency on the
-`idlescreen/runtime` engine repo. CI checks it out into `runtime/`; locally
-`bootstrap.sh` clones or symlinks a sibling `../idle` checkout there.
+## License
 
-## Layout
-
-- `<saver>/src` — saver implementation (`cdylib` + tests)
-- `<saver>/assets` — pixmap + Windows icon
-- `<saver>/libscreensaver_<saver>.idleplugin.toml` — signed-manifest input
-- `build-support/` — shared build-script crate (Windows resource embed)
-- One `rust-toolchain.toml`, one `Cargo.lock`, one CI — bumps land once.
-
-## Releasing
-
-Tagging `vX.Y.Z` builds all ten savers, packages each as
-`idle-saver-<name>` deb+rpm, cosign-signs every artifact, publishes the
-GitHub release, and dispatches the `idlescreen/packages` pool import.
-All savers share the workspace version (`workspace.package.version`).
-
-History: these crates were imported from the ten `idle-saver-*`
-repositories, which are now archived.
+Apache-2.0 · © 2026 IdleScreen
