@@ -45,8 +45,11 @@ pub extern "C" fn saver_new(cols: usize, rows: usize) -> *mut SaverHost {
 
 /// Advances the saver by `dt_ms` milliseconds, redraws the grid, and
 /// returns a pointer to the packed cell buffer (valid until next call).
+///
+/// # Safety
+/// `host` must be a pointer returned by `saver_new`, not yet freed.
 #[unsafe(no_mangle)]
-pub extern "C" fn saver_tick(host: *mut SaverHost, dt_ms: f64) -> *const u32 {
+pub unsafe extern "C" fn saver_tick(host: *mut SaverHost, dt_ms: f64) -> *const u32 {
     if host.is_null() {
         return std::ptr::null();
     }
@@ -67,8 +70,11 @@ pub extern "C" fn saver_tick(host: *mut SaverHost, dt_ms: f64) -> *const u32 {
 }
 
 /// Number of u32 words in the packed buffer (cols * rows * 3).
+///
+/// # Safety
+/// `host` must be a pointer returned by `saver_new`, not yet freed.
 #[unsafe(no_mangle)]
-pub extern "C" fn saver_cells_len(host: *const SaverHost) -> usize {
+pub unsafe extern "C" fn saver_cells_len(host: *const SaverHost) -> usize {
     if host.is_null() {
         return 0;
     }
@@ -76,8 +82,11 @@ pub extern "C" fn saver_cells_len(host: *const SaverHost) -> usize {
 }
 
 /// Rebuilds the grid at a new size (canvas resized).
+///
+/// # Safety
+/// `host` must be a pointer returned by `saver_new`, not yet freed.
 #[unsafe(no_mangle)]
-pub extern "C" fn saver_resize(host: *mut SaverHost, cols: usize, rows: usize) {
+pub unsafe extern "C" fn saver_resize(host: *mut SaverHost, cols: usize, rows: usize) {
     if host.is_null() || cols == 0 || rows == 0 || cols > 512 || rows > 256 {
         return;
     }
