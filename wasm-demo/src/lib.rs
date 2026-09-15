@@ -61,8 +61,7 @@ pub extern "C" fn saver_tick(host: *mut SaverHost, dt_ms: f64) -> *const u32 {
             | (c.fg.1 as u32) << 8
             | (c.fg.2 as u32) << 16
             | (u32::from(c.bold) << 24);
-        h.packed[i * 3 + 2] =
-            (c.bg.0 as u32) | (c.bg.1 as u32) << 8 | (c.bg.2 as u32) << 16;
+        h.packed[i * 3 + 2] = (c.bg.0 as u32) | (c.bg.1 as u32) << 8 | (c.bg.2 as u32) << 16;
     }
     h.packed.as_ptr()
 }
