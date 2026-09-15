@@ -1,0 +1,16 @@
+[package]
+name = "wasm-demo"
+version.workspace = true
+edition.workspace = true
+authors.workspace = true
+license.workspace = true
+repository.workspace = true
+description = "Browser host shim — runs an IdleScreen saver under wasm32 for the website live demo."
+publish = false
+
+[lib]
+crate-type = ["cdylib"]
+
+[dependencies]
+beams = { path = "../beams" }
+idle-api.workspace = true

@@ -12,7 +12,7 @@ autobins = false
 [lib]
 name = "screensaver_beams"
 path = "src/lib.rs"
-crate-type = ["cdylib"]
+crate-type = ["cdylib", "rlib"]
 
 [dependencies]
 idle-api.workspace = true
