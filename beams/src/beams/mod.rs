@@ -229,7 +229,7 @@ impl Screensaver for Beams {
 }
 
 #[cfg(test)]
-#[path = "beams_tests.rs"]
+#[path = "beams_tests/mod.rs"]
 mod tests;
 
 #[cfg(test)]
